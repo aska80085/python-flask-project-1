@@ -90,9 +90,7 @@ class OneAnswer(Question):
 
     @staticmethod
     def is_valid(answer):
-        if not isinstance(answer, str):
-            return False
-        return True
+        return isinstance(answer, str)
 
 
 class MultipleChoice(Question):

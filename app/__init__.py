@@ -6,5 +6,7 @@ USERS = []  # list for objects of type User
 EXPRS = []  # list for objects of type Expression
 QUEST = []  # list for objects of type Question
 
-from app import views
+from app import views_all
 from app import models
+from app import views
+
