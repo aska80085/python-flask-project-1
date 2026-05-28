@@ -72,15 +72,19 @@ def solve_expr(expr_id):
     if user_answer == expression.answer:
         user.increase_score(expression.reward)
         result = "correct"
+        reward = expression.reward
     else:
         result = "wrong"
+        reward = 0
+
+    user.solve(expression, user_answer)
 
     return Response(
         json.dumps(
             {
                 "expression_id": expr_id,
                 "result": result,
-                "reward": expression.reward,
+                "reward": reward,
             }
         ),
         status=HTTPStatus.OK,

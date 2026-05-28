@@ -55,3 +55,15 @@ def get_user(user_id):
         HTTPStatus.CREATED,
         mimetype="application/json",
     )
+
+
+@app.get("/users/<int:user_id>/history")
+def get_user_history(user_id):
+    if not models.User.is_valid_id(user_id):
+        return Response(status=HTTPStatus.NOT_FOUND)
+    user = USERS[user_id]
+    return Response(
+        json.dumps({"history": user.history}),
+        status=HTTPStatus.OK,
+        mimetype="application/json",
+    )

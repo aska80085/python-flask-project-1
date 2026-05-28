@@ -9,4 +9,3 @@ QUEST = []  # list for objects of type Question
 from app import views_all
 from app import models
 from app import views
-

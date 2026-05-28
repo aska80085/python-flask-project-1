@@ -1,4 +1,4 @@
-from app import app, models, QUEST
+from app import app, models, QUEST, USERS
 from flask import request, Response, url_for
 from http import HTTPStatus
 import json
@@ -74,6 +74,48 @@ def get_random_question():
     )
 
 
-@app.post("/questions/<question_id>/solve")
-def solve_question():
-    pass
+@app.post("/questions/<int:question_id>/solve")
+def solve_question(question_id):
+    data = request.get_json()
+    user_id = data["user_id"]
+    user_answer = data["user_answer"]
+    if not models.User.is_valid_id(user_id):
+        return Response(status=HTTPStatus.NOT_FOUND)
+    if not models.Question.is_valid_id(question_id):
+        return Response(status=HTTPStatus.NOT_FOUND)
+    question = QUEST[question_id]
+    user = USERS[user_id]
+    if isinstance(question, models.OneAnswer):
+        if isinstance(user_answer, int):
+            return Response(
+                "Это вопрос с одним ответом, пожалуйста, введите строчку",
+                status=HTTPStatus.BAD_REQUEST,
+            )
+    else:  # if isinstance(question, models.MultipleChoice):
+        if isinstance(user_answer, str):
+            return Response(
+                "Это вопрос с множественным выбором, пожалуйста, введите число",
+                status=HTTPStatus.BAD_REQUEST,
+            )
+
+    if user_answer == question.answer:
+        user.increase_score(question.reward)
+        result = "Correct"
+        reward = question.reward
+    else:
+        result = "Wrong"
+        reward = 0
+
+    user.solve(question, user_answer)
+
+    return Response(
+        json.dumps(
+            {
+                "question_id": question_id,
+                "result": result,
+                "reward": reward,
+            }
+        ),
+        status=HTTPStatus.OK,
+        mimetype="application/json",
+    )
